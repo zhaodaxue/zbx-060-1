@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  warehouse-app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - warehouse-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  warehouse-data:

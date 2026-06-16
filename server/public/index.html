@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>救灾物资中转仓管理系统</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>物资管理</h2>
+      </div>
+      <nav class="nav-menu">
+        <a href="#" class="nav-item active" data-page="dashboard">
+          <span class="nav-icon">📊</span>
+          <span>首页总览</span>
+        </a>
+        <a href="#" class="nav-item" data-page="inbound">
+          <span class="nav-icon">📥</span>
+          <span>入库登记</span>
+        </a>
+        <a href="#" class="nav-item" data-page="outbound">
+          <span class="nav-icon">📤</span>
+          <span>调拨出库</span>
+        </a>
+      </nav>
+      <div class="sidebar-section">
+        <h3>批次列表</h3>
+        <div id="batchList" class="batch-list">
+          <div class="loading">加载中...</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="page-header">
+        <h1 id="pageTitle">首页总览</h1>
+      </header>
+
+      <section id="dashboardPage" class="page active">
+        <div class="stats-cards">
+          <div class="stat-card stat-card-blue">
+            <div class="stat-icon">📦</div>
+            <div class="stat-info">
+              <div class="stat-value" id="todayInboundCount">0</div>
+              <div class="stat-label">今日入库批次数</div>
+            </div>
+          </div>
+          <div class="stat-card stat-card-green">
+            <div class="stat-icon">🏭</div>
+            <div class="stat-info">
+              <div class="stat-value" id="totalRemainingQuantity">0</div>
+              <div class="stat-label">在库总件数</div>
+            </div>
+          </div>
+          <div class="stat-card stat-card-orange">
+            <div class="stat-icon">🚚</div>
+            <div class="stat-info">
+              <div class="stat-value" id="todayOutboundQuantity">0</div>
+              <div class="stat-label">今日调拨出库件数</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="inboundPage" class="page">
+        <div class="form-container">
+          <form id="inboundForm" class="form">
+            <div class="form-group">
+              <label for="materialCode">物资代号 *</label>
+              <input type="text" id="materialCode" name="materialCode" placeholder="例如：MZ-001" required>
+            </div>
+            <div class="form-group">
+              <label for="batchNo">批次号 *</label>
+              <input type="text" id="batchNo" name="batchNo" placeholder="例如：20240101-001" required>
+              <div class="form-hint">同一批次号不可重复入库</div>
+            </div>
+            <div class="form-group">
+              <label for="quantity">件数 *</label>
+              <input type="number" id="quantity" name="quantity" min="1" step="1" placeholder="请输入件数" required>
+            </div>
+            <div class="form-group">
+              <label for="inboundTime">入库时刻 *</label>
+              <input type="datetime-local" id="inboundTime" name="inboundTime" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">提交入库</button>
+          </form>
+          <div id="inboundResult" class="result-box hidden"></div>
+        </div>
+      </section>
+
+      <section id="outboundPage" class="page">
+        <div class="form-container">
+          <form id="outboundForm" class="form">
+            <div class="form-group">
+              <label for="outboundBatch">目标批次 *</label>
+              <select id="outboundBatch" name="batchId" required>
+                <option value="">请选择批次（仅显示有库存的）</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="outboundQuantity">调拨件数 *</label>
+              <input type="number" id="outboundQuantity" name="quantity" min="1" step="1" placeholder="请输入调拨件数" required>
+              <div class="form-hint" id="stockHint"></div>
+            </div>
+            <div class="form-group">
+              <label for="receiverCode">接收单位代号 *</label>
+              <input type="text" id="receiverCode" name="receiverCode" placeholder="例如：UNIT-A01" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">确认调拨</button>
+          </form>
+          <div id="outboundResult" class="result-box hidden"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
