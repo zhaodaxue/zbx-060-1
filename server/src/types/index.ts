@@ -44,6 +44,7 @@ export interface BatchWithMaterial {
 export interface BatchListItem {
   id: string;
   batchNo: string;
+  materialCode: string;
   remainingQuantity: number;
   latestInboundTime: string;
   totalQuantity: number;

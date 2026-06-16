@@ -27,7 +27,7 @@ export function createInbound(input: InboundCreateInput): InboundCreateResult {
   const transaction = db.transaction(() => {
     const batchId = uuidv4();
     const inboundNo = generateInboundNo();
-    const now = new Date().toISOString();
+    const now = formatLocalNow();
     const inboundTime = formatInboundTime(input.inboundTime);
 
     db.prepare(`
@@ -83,7 +83,15 @@ function generateInboundNo(): string {
 
 function formatInboundTime(timeStr: string): string {
   const [datePart, timePart] = timeStr.split(' ');
-  const [year, month, day] = datePart.split('-');
-  const [hour, minute] = timePart.split(':');
-  return `${year}-${month}-${day}T${hour}:${minute}:00.000Z`;
+  return `${datePart} ${timePart}:00`;
+}
+
+function formatLocalNow(): string {
+  const now = new Date();
+  return now.getFullYear().toString() + '-' +
+    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+    String(now.getDate()).padStart(2, '0') + ' ' +
+    String(now.getHours()).padStart(2, '0') + ':' +
+    String(now.getMinutes()).padStart(2, '0') + ':' +
+    String(now.getSeconds()).padStart(2, '0');
 }

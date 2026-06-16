@@ -109,9 +109,10 @@ async function loadAvailableBatches() {
       for (const batch of data.data) {
         const option = document.createElement('option');
         option.value = batch.id;
-        option.textContent = `${batch.batchNo} (剩余: ${batch.remainingQuantity}件)`;
+        option.textContent = `${batch.materialCode} / ${batch.batchNo} (剩余: ${batch.remainingQuantity}件)`;
         option.dataset.stock = batch.remainingQuantity;
         option.dataset.batchNo = batch.batchNo;
+        option.dataset.materialCode = batch.materialCode;
         select.appendChild(option);
       }
     }
@@ -216,6 +217,7 @@ document.getElementById('outboundForm').addEventListener('submit', async (e) => 
         <div class="result-title">✅ 调拨成功</div>
         <div class="result-detail">
           <div>调拨单号：<strong>${data.outboundNo}</strong></div>
+          <div>物资代号：${selectedOption ? escapeHtml(selectedOption.dataset.materialCode) : ''}</div>
           <div>批次号：${selectedOption ? escapeHtml(selectedOption.dataset.batchNo) : ''}</div>
           <div>调拨件数：${formData.quantity} 件</div>
           <div>剩余库存：${data.remainingQuantity} 件</div>
@@ -243,15 +245,13 @@ document.getElementById('outboundForm').addEventListener('submit', async (e) => 
   }
 });
 
-function formatDateTime(isoString) {
-  if (!isoString) return '-';
-  const date = new Date(isoString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hour = String(date.getHours()).padStart(2, '0');
-  const minute = String(date.getMinutes()).padStart(2, '0');
-  return `${year}-${month}-${day} ${hour}:${minute}`;
+function formatDateTime(timeStr) {
+  if (!timeStr) return '-';
+  const match = timeStr.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);
+  if (match) {
+    return `${match[1]}-${match[2]}-${match[3]} ${match[4]}:${match[5]}`;
+  }
+  return timeStr;
 }
 
 function formatDateTimeLocal(value) {

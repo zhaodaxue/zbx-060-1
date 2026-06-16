@@ -23,6 +23,7 @@ export function getBatchListByMaterial(): BatchWithMaterial[] {
     const item: BatchListItem = {
       id: row.id,
       batchNo: row.batch_no,
+      materialCode: row.material_code,
       remainingQuantity: row.remaining_quantity,
       latestInboundTime: row.latest_inbound_time,
       totalQuantity: row.total_quantity,
@@ -70,6 +71,7 @@ export function getAvailableBatches(): BatchListItem[] {
   return rows.map(row => ({
     id: row.id,
     batchNo: row.batch_no,
+    materialCode: row.material_code,
     remainingQuantity: row.remaining_quantity,
     latestInboundTime: row.latest_inbound_time,
     totalQuantity: row.total_quantity,

@@ -82,13 +82,30 @@ export function deductStock(input: OutboundDeductInput): DeductResult {
       material_code: string;
       batch_no: string;
       remaining_quantity: number;
+    } | undefined;
+
+    if (!batch) {
+      throw new Error('批次不存在');
+    }
+
+    if (batch.remaining_quantity < input.quantity) {
+      throw new Error(`调拨件数 ${input.quantity} 超过该批次剩余库存 ${batch.remaining_quantity}`);
+    }
+
+    const updateResult = db.prepare(
+      'UPDATE batches SET remaining_quantity = remaining_quantity - ? WHERE id = ? AND remaining_quantity >= ?'
+    ).run(input.quantity, input.batchId, input.quantity);
+
+    if (updateResult.changes === 0) {
+      throw new Error('库存不足，调拨失败');
+    }
+
+    const updatedBatch = db.prepare('SELECT remaining_quantity FROM batches WHERE id = ?').get(input.batchId) as {
+      remaining_quantity: number;
     };
 
-    const newRemaining = batch.remaining_quantity - input.quantity;
-    db.prepare('UPDATE batches SET remaining_quantity = ? WHERE id = ?').run(newRemaining, input.batchId);
-
     const outboundNo = generateOutboundNo();
-    const now = new Date().toISOString();
+    const now = formatLocalNow();
     const outboundTime = now;
 
     db.prepare(`
@@ -106,7 +123,7 @@ export function deductStock(input: OutboundDeductInput): DeductResult {
       now
     );
 
-    return { outboundNo, remainingQuantity: newRemaining };
+    return { outboundNo, remainingQuantity: updatedBatch.remaining_quantity };
   });
 
   try {
@@ -129,4 +146,14 @@ function generateOutboundNo(): string {
     String(now.getDate()).padStart(2, '0');
   const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
   return `OB${dateStr}${random}`;
+}
+
+function formatLocalNow(): string {
+  const now = new Date();
+  return now.getFullYear().toString() + '-' +
+    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+    String(now.getDate()).padStart(2, '0') + ' ' +
+    String(now.getHours()).padStart(2, '0') + ':' +
+    String(now.getMinutes()).padStart(2, '0') + ':' +
+    String(now.getSeconds()).padStart(2, '0');
 }
