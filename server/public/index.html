@@ -28,6 +28,9 @@
       </nav>
       <div class="sidebar-section">
         <h3>批次列表</h3>
+        <div class="search-box">
+          <input type="text" id="batchSearch" placeholder="搜索物资代号或批次号...">
+        </div>
         <div id="batchList" class="batch-list">
           <div class="loading">加载中...</div>
         </div>
@@ -115,6 +118,16 @@
         </div>
       </section>
     </main>
+
+    <div id="batchModalOverlay" class="modal-overlay hidden">
+      <div id="batchModal" class="modal">
+        <div class="modal-header">
+          <h3 id="modalTitle">批次详情</h3>
+          <button id="modalClose" class="modal-close">&times;</button>
+        </div>
+        <div id="modalBody" class="modal-body"></div>
+      </div>
+    </div>
   </div>
 
   <script src="/app.js"></script>

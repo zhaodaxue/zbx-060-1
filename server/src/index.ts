@@ -6,6 +6,7 @@ import { createInbound } from './modules/inboundService';
 import { deductStock } from './modules/inventoryDeduction';
 import { getDashboardStats } from './modules/dashboardSummary';
 import { getBatchListByMaterial, getAvailableBatches } from './modules/batchList';
+import { getBatchLatestOutbound } from './modules/batchDetail';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,6 +42,17 @@ app.get('/api/batches/available', (req, res) => {
   try {
     const batches = getAvailableBatches();
     res.json({ success: true, data: batches });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : '未知错误';
+    res.json({ success: false, error: message });
+  }
+});
+
+app.get('/api/batches/:batchId/latest-outbound', (req, res) => {
+  try {
+    const { batchId } = req.params;
+    const detail = getBatchLatestOutbound(batchId);
+    res.json({ success: true, data: detail });
   } catch (err) {
     const message = err instanceof Error ? err.message : '未知错误';
     res.json({ success: false, error: message });
